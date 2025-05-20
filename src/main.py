@@ -1,10 +1,14 @@
 import subprocess
 import os
 import shutil
+import re
 
 TEMP_FOLDER = os.path.join(os.path.dirname(__file__), "../temp")
 THEME_FOLDER = os.path.join(TEMP_FOLDER, "shell-theme", "theme")
-OWN_THEME_FILE = os.path.join(THEME_FOLDER, "gnome-shell-theme.gresource.xml")
+OWN_THEME_XML = os.path.join(THEME_FOLDER, "gnome-shell-theme.gresource.xml")
+OWN_THEME_DARK_CSS = os.path.join(THEME_FOLDER, "gnome-shell-dark.css")
+OWN_THEME_LIGHT_CSS = os.path.join(THEME_FOLDER, "gnome-shell-light.css")
+
 
 def extract_gdm_theme():
     print("Extracting GDM theme...")
@@ -46,9 +50,9 @@ def copy_current_wallpaper_to_theme_folder():
 
 def create_own_theme_file():
     print("Creating own theme...")
-    open (OWN_THEME_FILE, "w").close()
+    open (OWN_THEME_XML, "w").close()
     try:
-        with open(OWN_THEME_FILE, "w") as f:
+        with open(OWN_THEME_XML, "w") as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             f.write("<gresources>\n")
             f.write('  <gresource prefix="/org/gnome/shell/theme">\n')
@@ -59,16 +63,36 @@ def create_own_theme_file():
             f.write('    <file>gnome-shell-high-contrast.css</file>\n')
             f.write('    <file>gnome-shell-start.svg</file>\n')
             f.write('    <file>pad-osd.css</file>\n')
-            f.write('    <file>process-working-dark.svg</file>\n')
-            f.write('    <file>process-working-light.svg</file>\n')
             f.write('    <file>workspace-placeholder.svg</file>\n')
             f.write('    <file>wallpaper.png</file>\n')
             f.write('  </gresource>\n')
             f.write("</gresources>\n")
             
-        print(f"Created {OWN_THEME_FILE}")
+        print(f"Created {OWN_THEME_XML}")
     except Exception as e:
         print(f"Error creating own theme file: {e}")
+        exit(1)
+        
+def change_wallpaper_style_on_css():
+    print("Changing wallpaper style on CSS...")
+    try:
+        style_files = [OWN_THEME_DARK_CSS, OWN_THEME_LIGHT_CSS]
+        
+        for style_file in style_files:
+            with open(style_file, "r") as f:
+                content = f.read()
+                pattern = r'#lockDialogGroup\s*\{[^}]*\}'
+                content = re.sub(pattern, '', content, flags=re.DOTALL)
+                content += "\n"
+                content += "#lockDialogGroup {\n"
+                content += "    background: url('wallpaper.png');\n"
+                content += "    background-size: auto;\n"
+                content += "    background-repeat: no-repeat;\n"
+                content += "}\n"
+            with open(style_file, "w") as f:
+                f.write(content)
+    except Exception as e:
+        print(f"Error changing wallpaper style: {e}")
         exit(1)
 
 
@@ -76,6 +100,7 @@ def main():
    extract_gdm_theme()
    copy_current_wallpaper_to_theme_folder()
    create_own_theme_file()
+   change_wallpaper_style_on_css()
 
 
 if __name__ == "__main__":
