@@ -6,6 +6,7 @@ import re
 TEMP_FOLDER = os.path.join(os.path.dirname(__file__), "../temp")
 THEME_FOLDER = os.path.join(TEMP_FOLDER, "shell-theme", "theme")
 OWN_THEME_XML = os.path.join(THEME_FOLDER, "gnome-shell-theme.gresource.xml")
+OWN_THEME_COMPILED = OWN_THEME_XML.replace(".xml", "")
 OWN_THEME_DARK_CSS = os.path.join(THEME_FOLDER, "gnome-shell-dark.css")
 OWN_THEME_LIGHT_CSS = os.path.join(THEME_FOLDER, "gnome-shell-light.css")
 
@@ -95,12 +96,26 @@ def change_wallpaper_style_on_css():
         print(f"Error changing wallpaper style: {e}")
         exit(1)
 
+def compile_gresource():
+    print("Compiling GResource...")
+    cmd = [
+        "glib-compile-resources",
+        "--sourcedir=" + THEME_FOLDER,
+        OWN_THEME_XML
+    ]
+    try:
+        subprocess.check_output(cmd, text=True)
+        print("GResource compiled successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error compiling GResource: {e}")
+        exit(1)
 
 def main():
    extract_gdm_theme()
    copy_current_wallpaper_to_theme_folder()
    create_own_theme_file()
    change_wallpaper_style_on_css()
+   compile_gresource()
 
 
 if __name__ == "__main__":
