@@ -7,6 +7,10 @@ A simple script to automatically change the GDM (GNOME Display Manager) wallpape
 -   Automatically updates the GDM wallpaper
 -   Easy to configure and use
 
+## Requirements
+
+-   gresource: glib2-devel on archlinux
+
 ## Installation
 
 TBD
