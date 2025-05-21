@@ -2,6 +2,7 @@ import subprocess
 import os
 import shutil
 import re
+from utils.run_sudo_command import run_sudo_command
 
 TEMP_FOLDER = os.path.join(os.path.dirname(__file__), "../temp")
 THEME_FOLDER = os.path.join(TEMP_FOLDER, "shell-theme", "theme")
@@ -122,31 +123,38 @@ def compile_gresource() -> None:
 def backup_original_gdm_theme() -> None:
     print("Backing up original GDM theme...")
     BACKUP_COMPILED_THEME = ORIGINAL_COMPILED_THEME + ".bak"
+
     if not os.path.exists(BACKUP_COMPILED_THEME):
-        try:
-            cmd = ["sudo", "cp", ORIGINAL_COMPILED_THEME, BACKUP_COMPILED_THEME]
+        result = run_sudo_command(
+            f"cp {ORIGINAL_COMPILED_THEME} {BACKUP_COMPILED_THEME}"
+        )
 
-            result = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-            )
-
+        if result["success"]:
             print(f"Original GDM theme backed up to {BACKUP_COMPILED_THEME}")
-        except subprocess.CalledProcessError as e:
-            print(f"Error doing backup of GDM original theme: {e}")
+        else:
+            print(f"Error backing up original GDM theme: {result['stderr']}")
             exit(1)
+
     else:
-        print("No original GDM theme found to back up.")
+        print("Backup already exists, skipping backup.")
 
 
 def main() -> None:
+    print("\n================= Start =================\n")
     create_temp_folder()
+    print("\n")
     extract_gdm_theme()
+    print("\n")
     copy_current_wallpaper_to_theme_folder()
+    print("\n")
     create_own_theme_file()
+    print("\n")
     change_wallpaper_style_on_css()
+    print("\n")
     compile_gresource()
+    print("\n")
     backup_original_gdm_theme()
+    print("\n================= Finish =================\n")
 
 
 if __name__ == "__main__":
