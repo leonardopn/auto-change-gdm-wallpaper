@@ -11,7 +11,7 @@ OWN_THEME_DARK_CSS = os.path.join(THEME_FOLDER, "gnome-shell-dark.css")
 OWN_THEME_LIGHT_CSS = os.path.join(THEME_FOLDER, "gnome-shell-light.css")
 
 
-def extract_gdm_theme():
+def extract_gdm_theme()-> None:
     print("Extracting GDM theme...")
     cmd = [
         "bash",
@@ -25,7 +25,7 @@ def extract_gdm_theme():
         print(f"Error extracting GDM theme: {e}")
         exit(1)
 
-def copy_current_wallpaper_to_theme_folder():
+def copy_current_wallpaper_to_theme_folder()->None:
     print("Copying wallpaper to theme folder...")
     # TODO: Check if the user is using Gnome, if not, try to get the wallpaper using another method
     cmd = [
@@ -49,7 +49,7 @@ def copy_current_wallpaper_to_theme_folder():
         print(f"Error copying current wallpaper {e}")
         exit(1)
 
-def create_own_theme_file():
+def create_own_theme_file()-> None:
     print("Creating own theme...")
     open (OWN_THEME_XML, "w").close()
     try:
@@ -74,7 +74,7 @@ def create_own_theme_file():
         print(f"Error creating own theme file: {e}")
         exit(1)
         
-def change_wallpaper_style_on_css():
+def change_wallpaper_style_on_css()->None:
     print("Changing wallpaper style on CSS...")
     try:
         style_files = [OWN_THEME_DARK_CSS, OWN_THEME_LIGHT_CSS]
@@ -96,7 +96,7 @@ def change_wallpaper_style_on_css():
         print(f"Error changing wallpaper style: {e}")
         exit(1)
 
-def compile_gresource():
+def compile_gresource()->None:
     print("Compiling GResource...")
     cmd = [
         "glib-compile-resources",
@@ -110,7 +110,7 @@ def compile_gresource():
         print(f"Error compiling GResource: {e}")
         exit(1)
 
-def main():
+def main()->None:
    extract_gdm_theme()
    copy_current_wallpaper_to_theme_folder()
    create_own_theme_file()
