@@ -139,6 +139,20 @@ def backup_original_gdm_theme() -> None:
         print("Backup already exists, skipping backup.")
 
 
+def save_new_theme() -> None:
+    print("Saving new GDM theme...")
+
+    f"cp {OWN_THEME_COMPILED} /usr/share/gnome-shell"
+
+    result = run_sudo_command(f"cp {OWN_THEME_COMPILED} /usr/share/gnome-shell")
+
+    if result["success"]:
+        print(f"New GDM theme saved to {ORIGINAL_COMPILED_THEME}")
+    else:
+        print(f"Error saving new GDM theme: {result['stderr']}")
+        exit(1)
+
+
 def main() -> None:
     print("\n================= Start =================\n")
     create_temp_folder()
@@ -154,6 +168,10 @@ def main() -> None:
     compile_gresource()
     print("\n")
     backup_original_gdm_theme()
+    print("\n")
+    save_new_theme()
+    print("\n")
+    print("Reboot your system to apply the changes.")
     print("\n================= Finish =================\n")
 
 
