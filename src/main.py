@@ -5,6 +5,9 @@ import re
 
 TEMP_FOLDER = os.path.join(os.path.dirname(__file__), "../temp")
 THEME_FOLDER = os.path.join(TEMP_FOLDER, "shell-theme", "theme")
+
+ORIGINAL_COMPILED_THEME = "/usr/share/gnome-shell/gnome-shell-theme.gresource"
+
 OWN_THEME_XML = os.path.join(THEME_FOLDER, "gnome-shell-theme.gresource.xml")
 OWN_THEME_COMPILED = OWN_THEME_XML.replace(".xml", "")
 OWN_THEME_DARK_CSS = os.path.join(THEME_FOLDER, "gnome-shell-dark.css")
@@ -116,6 +119,26 @@ def compile_gresource() -> None:
         exit(1)
 
 
+def backup_original_gdm_theme() -> None:
+    print("Backing up original GDM theme...")
+    BACKUP_COMPILED_THEME = ORIGINAL_COMPILED_THEME + ".bak"
+    if not os.path.exists(BACKUP_COMPILED_THEME):
+        try:
+            cmd = ["sudo", "cp", ORIGINAL_COMPILED_THEME, BACKUP_COMPILED_THEME]
+
+            result = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+            )
+
+            print(f"Original GDM theme backed up to {BACKUP_COMPILED_THEME}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error doing backup of GDM original theme: {e}")
+            exit(1)
+    else:
+        print("No original GDM theme found to back up.")
+
+
 def main() -> None:
     create_temp_folder()
     extract_gdm_theme()
@@ -123,6 +146,7 @@ def main() -> None:
     create_own_theme_file()
     change_wallpaper_style_on_css()
     compile_gresource()
+    backup_original_gdm_theme()
 
 
 if __name__ == "__main__":
