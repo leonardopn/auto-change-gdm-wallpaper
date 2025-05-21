@@ -11,7 +11,15 @@ OWN_THEME_DARK_CSS = os.path.join(THEME_FOLDER, "gnome-shell-dark.css")
 OWN_THEME_LIGHT_CSS = os.path.join(THEME_FOLDER, "gnome-shell-light.css")
 
 
-def extract_gdm_theme()-> None:
+def create_temp_folder() -> None:
+    print("Creating temp folder...")
+    if not os.path.exists(TEMP_FOLDER):
+        os.makedirs(TEMP_FOLDER)
+        print(f"Temp folder created at {TEMP_FOLDER}")
+    else:
+        print(f"Temp folder already exists at {TEMP_FOLDER}")
+
+
     print("Extracting GDM theme...")
     cmd = [
         "bash",
@@ -110,12 +118,14 @@ def compile_gresource()->None:
         print(f"Error compiling GResource: {e}")
         exit(1)
 
-def main()->None:
-   extract_gdm_theme()
-   copy_current_wallpaper_to_theme_folder()
-   create_own_theme_file()
-   change_wallpaper_style_on_css()
-   compile_gresource()
+
+def main() -> None:
+    create_temp_folder()
+    extract_gdm_theme()
+    copy_current_wallpaper_to_theme_folder()
+    create_own_theme_file()
+    change_wallpaper_style_on_css()
+    compile_gresource()
 
 
 if __name__ == "__main__":
