@@ -20,6 +20,7 @@ def create_temp_folder() -> None:
         print(f"Temp folder already exists at {TEMP_FOLDER}")
 
 
+def extract_gdm_theme() -> None:
     print("Extracting GDM theme...")
     cmd = [
         "bash",
@@ -28,70 +29,69 @@ def create_temp_folder() -> None:
     ]
     try:
         subprocess.check_output(cmd, text=True)
+
         print("GDM theme extracted successfully.")
     except subprocess.CalledProcessError as e:
-        print(f"Error extracting GDM theme: {e}")
+        print(f"Error extracting GDM theme: {e.output}")
         exit(1)
 
-def copy_current_wallpaper_to_theme_folder()->None:
+
+def copy_current_wallpaper_to_theme_folder() -> None:
     print("Copying wallpaper to theme folder...")
     # TODO: Check if the user is using Gnome, if not, try to get the wallpaper using another method
-    cmd = [
-        "gsettings",
-        "get",
-        "org.gnome.desktop.background",
-        "picture-uri"
-    ]
+    cmd = ["gsettings", "get", "org.gnome.desktop.background", "picture-uri"]
     try:
         output = subprocess.check_output(cmd, text=True)
         print("Wallpaper URI:", output.strip())
-        
+
         wallpaper_path = output.strip().replace("file://", "")
         wallpaper_path = wallpaper_path.replace("'", "")
-        copiedFile =shutil.copy2(wallpaper_path, THEME_FOLDER)
+        copiedFile = shutil.copy2(wallpaper_path, THEME_FOLDER)
         dest_path = os.path.join(THEME_FOLDER, "wallpaper.png")
-        
+
         os.rename(copiedFile, dest_path)
         print(f"Copied wallpaper to {dest_path}")
     except subprocess.CalledProcessError as e:
         print(f"Error copying current wallpaper {e}")
         exit(1)
 
-def create_own_theme_file()-> None:
+
+def create_own_theme_file() -> None:
     print("Creating own theme...")
-    open (OWN_THEME_XML, "w").close()
+    open(OWN_THEME_XML, "w").close()
     try:
         with open(OWN_THEME_XML, "w") as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             f.write("<gresources>\n")
             f.write('  <gresource prefix="/org/gnome/shell/theme">\n')
-            f.write('    <file>calendar-today.svg</file>\n')
-            f.write('    <file>calendar-today-light.svg</file>\n')
-            f.write('    <file>gnome-shell-dark.css</file>\n')
-            f.write('    <file>gnome-shell-light.css</file>\n')
-            f.write('    <file>gnome-shell-high-contrast.css</file>\n')
-            f.write('    <file>gnome-shell-start.svg</file>\n')
-            f.write('    <file>pad-osd.css</file>\n')
-            f.write('    <file>workspace-placeholder.svg</file>\n')
-            f.write('    <file>wallpaper.png</file>\n')
-            f.write('  </gresource>\n')
+            f.write("    <file>calendar-today.svg</file>\n")
+            f.write("    <file>calendar-today-light.svg</file>\n")
+            f.write("    <file>gnome-shell-dark.css</file>\n")
+            f.write("    <file>gnome-shell-light.css</file>\n")
+            f.write("    <file>gnome-shell-high-contrast.css</file>\n")
+            f.write("    <file>gnome-shell-start.svg</file>\n")
+            f.write("    <file>pad-osd.css</file>\n")
+            f.write("    <file>workspace-placeholder.svg</file>\n")
+            f.write("    <file>wallpaper.png</file>\n")
+            f.write("  </gresource>\n")
             f.write("</gresources>\n")
-            
+
         print(f"Created {OWN_THEME_XML}")
     except Exception as e:
         print(f"Error creating own theme file: {e}")
         exit(1)
-        
-def change_wallpaper_style_on_css()->None:
+
+
+def change_wallpaper_style_on_css() -> None:
     print("Changing wallpaper style on CSS...")
     try:
         style_files = [OWN_THEME_DARK_CSS, OWN_THEME_LIGHT_CSS]
-        
+
         for style_file in style_files:
             with open(style_file, "r") as f:
                 content = f.read()
-                pattern = r'#lockDialogGroup\s*\{[^}]*\}'
-                content = re.sub(pattern, '', content, flags=re.DOTALL)
+                pattern = r"#lockDialogGroup\s*\{[^}]*\}"
+                content = re.sub(pattern, "", content, flags=re.DOTALL)
                 content += "\n"
                 content += "#lockDialogGroup {\n"
                 content += "    background: url('wallpaper.png');\n"
@@ -104,13 +104,10 @@ def change_wallpaper_style_on_css()->None:
         print(f"Error changing wallpaper style: {e}")
         exit(1)
 
-def compile_gresource()->None:
+
+def compile_gresource() -> None:
     print("Compiling GResource...")
-    cmd = [
-        "glib-compile-resources",
-        "--sourcedir=" + THEME_FOLDER,
-        OWN_THEME_XML
-    ]
+    cmd = ["glib-compile-resources", "--sourcedir=" + THEME_FOLDER, OWN_THEME_XML]
     try:
         subprocess.check_output(cmd, text=True)
         print("GResource compiled successfully.")
