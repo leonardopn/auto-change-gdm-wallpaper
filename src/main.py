@@ -99,7 +99,7 @@ def change_wallpaper_style_on_css() -> None:
                 content += "\n"
                 content += "#lockDialogGroup {\n"
                 content += "    background: url('wallpaper.png');\n"
-                content += "    background-size: auto;\n"
+                content += "    background-size: cover;\n"
                 content += "    background-repeat: no-repeat;\n"
                 content += "}\n"
             with open(style_file, "w") as f:
